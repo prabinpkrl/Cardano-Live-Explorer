@@ -63,7 +63,7 @@ async function startChainSync(onNewBlock) {
         //   //   );
         // });
 
-        next(); // request next block
+        next();
       },
 
       /**

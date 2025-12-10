@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import Layout from "./components/Layout";
 import HeaderBar from "./components/HeaderBar";
 import TransactionsPanel from "./components/TransactionsPanel";
 import BlocksPanel from "./components/BlocksPanel";
@@ -54,10 +55,10 @@ function App() {
         typeof block.issuer === "string"
           ? block.issuer
           : block.issuer?.verificationKey ||
-            block.issuer?.poolId ||
-            block.issuerVk ||
-            block.producer ||
-            "Unknown Pool";
+          block.issuer?.poolId ||
+          block.issuerVk ||
+          block.producer ||
+          "Unknown Pool";
 
       const blockData = {
         height: block.height,
@@ -155,59 +156,107 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#070915] via-[#0b1024] to-[#0d1632] text-gray-100">
+    <Layout>
       <HeaderBar isConnected={isConnected} />
 
-      <main className="w-full max-w-screen-2xl mx-auto px-8 py-10 space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
-            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
-              Connection
-            </p>
-            <p className="text-3xl font-semibold text-white">
-              {isConnected ? "Live" : "Waiting"}
-            </p>
-            <p className="text-sm text-gray-400 mt-2">
-              Socket to backend: {isConnected ? "up" : "down"}
-            </p>
+      <main className="w-full space-y-8 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Connection Status Card */}
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+              <svg className="w-40 h-40 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+              </svg>
+            </div>
+            <div className="relative z-10">
+              <p className="text-sm font-bold text-blue-200/80 uppercase tracking-widest mb-2">
+                Network Status
+              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-4xl font-extrabold text-white tracking-tight">
+                  {isConnected ? "Connected" : "Waiting"}
+                </p>
+              </div>
+              <p className="text-base text-gray-400 mt-4 flex items-center gap-2.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${isConnected ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]" : "bg-rose-400"}`}></span>
+                Socket connection {isConnected ? "established" : "lost"}
+              </p>
+            </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
-            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
-              Transactions Shown
-            </p>
-            <p className="text-3xl font-semibold text-white">
-              {transactions.length}
-            </p>
-            <p className="text-sm text-gray-400 mt-2">Latest 20 kept in memory</p>
+
+          {/* Transactions Card */}
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+              <svg className="w-40 h-40 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" />
+              </svg>
+            </div>
+            <div className="relative z-10">
+              <p className="text-sm font-bold text-purple-200/80 uppercase tracking-widest mb-2">
+                Live Transactions
+              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-4xl font-extrabold text-white tracking-tight">
+                  {transactions.length}
+                </p>
+                <span className="text-base text-gray-400 font-medium">showing</span>
+              </div>
+              <p className="text-base text-gray-400 mt-4">
+                Real-time feed (max 20)
+              </p>
+            </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
-            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
-              Blocks Shown
-            </p>
-            <p className="text-3xl font-semibold text-white">{blocks.length}</p>
-            <p className="text-sm text-gray-400 mt-2">Latest 20 kept in memory</p>
+
+          {/* Blocks Card */}
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+              <svg className="w-40 h-40 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+              </svg>
+            </div>
+            <div className="relative z-10">
+              <p className="text-sm font-bold text-amber-200/80 uppercase tracking-widest mb-2">
+                Latest Blocks
+              </p>
+              <div className="flex items-baseline gap-3">
+                <p className="text-4xl font-extrabold text-white tracking-tight">
+                  {blocks.length}
+                </p>
+                <span className="text-base text-gray-400 font-medium">showing</span>
+              </div>
+              <p className="text-base text-gray-400 mt-4">
+                Real-time feed (max 20)
+              </p>
+            </div>
           </div>
         </div>
+
         {isConnected && blocks.length === 0 && (
-          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-base text-gray-100 shadow-inner shadow-black/10">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse" />
-              <span className="font-semibold">
-                Connected, waiting for block events from backend
-              </span>
+          <div className="glass-panel rounded-2xl px-10 py-8 flex items-center gap-8 animate-fade-in relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
+            <div className="relative flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20">
+              <svg className="w-8 h-8 text-blue-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
             </div>
-            <span className="text-gray-400 block mt-2">
-              (listening for: block, blocks, newBlock)
-            </span>
-            {lastEventTs && (
-              <span className="block text-sm text-gray-500 mt-1">
-                Last event received: {formatTimeAgo(lastEventTs)}
-              </span>
-            )}
+            <div className="relative z-10">
+              <h3 className="text-xl font-bold text-white">
+                Waiting for network activity
+              </h3>
+              <p className="text-gray-300 text-base mt-1.5">
+                Listening for new blocks and transactions... (event: newBlock)
+              </p>
+              {lastEventTs && (
+                <p className="text-xs text-gray-500 mt-3 font-mono bg-black/20 px-3 py-1 rounded inline-block">
+                  Last heartbeat: {formatTimeAgo(lastEventTs)}
+                </p>
+              )}
+            </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 h-full">
           <TransactionsPanel
             transactions={transactions}
             truncateHash={truncateHash}
@@ -222,7 +271,7 @@ function App() {
           />
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }
 
