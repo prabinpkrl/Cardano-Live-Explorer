@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import HeaderBar from "./components/HeaderBar";
+import TransactionsPanel from "./components/TransactionsPanel";
+import BlocksPanel from "./components/BlocksPanel";
 
-const socket = io("http://localhost:5000");
+// Force websocket so we don't get stuck on long-polling
+const socket = io("http://localhost:5000", { transports: ["websocket"] });
 
-// Utility functions
-// const truncateAddress = (address, start = 8, end = 8) => {
-//   if (!address) return "N/A";
-//   if (address.length <= start + end) return address;
-//   return `${address.substring(0, start)}..${address.substring(
-//     address.length - end
-//   )}`;
-// };
-
+// Simple helpers used across the small components
 const truncateHash = (hash, start = 8, end = 8) => {
   if (!hash) return "N/A";
   if (hash.length <= start + end) return hash;
@@ -26,11 +22,7 @@ const lovelaceToADA = (lovelace) => {
   return ada.toLocaleString("en-US", { maximumFractionDigits: 6 });
 };
 
-const calculateEpoch = (slot) => {
-  // For preprod/testnet: epoch = Math.floor(slot / 432000)
-  // Adjust based on your network
-  return Math.floor(slot / 432000);
-};
+const calculateEpoch = (slot) => Math.floor(slot / 432000);
 
 const formatTimeAgo = (timestamp) => {
   if (!timestamp) return "Just now";
@@ -49,21 +41,24 @@ function App() {
   const [transactions, setTransactions] = useState([]);
   const [blocks, setBlocks] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
+  const [lastEventTs, setLastEventTs] = useState(null);
 
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to backend");
-      setIsConnected(true);
-    });
-
-    socket.on("disconnect", () => {
-      setIsConnected(false);
-    });
-
-    socket.on("block", (block) => {
+    const handleBlock = (block) => {
+      console.log("[frontend] received block", block);
       const timestamp = Date.now();
+      setLastEventTs(timestamp);
 
       // Process block
+      const pool =
+        typeof block.issuer === "string"
+          ? block.issuer
+          : block.issuer?.verificationKey ||
+            block.issuer?.poolId ||
+            block.issuerVk ||
+            block.producer ||
+            "Unknown Pool";
+
       const blockData = {
         height: block.height,
         slot: block.slot,
@@ -87,8 +82,7 @@ function App() {
             return sum + txOutput;
           }, BigInt(0)) || BigInt(0),
         // Extract pool info if available (from block metadata or issuer)
-        pool:
-          block.issuerVk || block.issuer || block.producer || "Unknown Pool",
+        pool,
       };
 
       setBlocks((prev) => [blockData, ...prev].slice(0, 20));
@@ -109,8 +103,11 @@ function App() {
             }, BigInt(0)) || BigInt(0);
 
           // Get output addresses
+          // Keep addresses even when the node does not return one so we can show a placeholder
           const outputAddresses =
-            tx.outputs?.map((output) => output.address).filter(Boolean) || [];
+            tx.outputs?.map(
+              (output) => output.address || "No address (not provided)"
+            ) || [];
 
           return {
             id: tx.id || tx.hash || `tx-${Date.now()}-${Math.random()}`,
@@ -125,221 +122,104 @@ function App() {
 
         setTransactions((prev) => [...newTransactions, ...prev].slice(0, 20));
       }
+    };
+
+    socket.on("connect", () => {
+      console.log("Connected to backend");
+      setIsConnected(true);
     });
 
+    socket.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    // Listen to a few common event names in case backend differs
+    const blockEvents = ["block", "blocks", "newBlock"];
+    blockEvents.forEach((eventName) => socket.on(eventName, handleBlock));
+    const logAnyEvent = (event, data) => {
+      console.log("[socket event]", event, data);
+    };
+    const logConnectError = (err) => {
+      console.error("[socket connect_error]", err?.message || err);
+    };
+    socket.onAny(logAnyEvent);
+    socket.on("connect_error", logConnectError);
+
     return () => {
-      socket.off("block");
+      blockEvents.forEach((eventName) => socket.off(eventName, handleBlock));
       socket.off("connect");
+      socket.off("disconnect");
+      socket.offAny(logAnyEvent);
+      socket.off("connect_error", logConnectError);
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0e27] text-gray-100">
-      {/* Header */}
-      <header className="bg-[#0f1429] border-b border-[#1a1f3a] px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">
-              Cardano Live Explorer
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">
-              Real-time blockchain data from Ogmios
+    <div className="min-h-screen bg-gradient-to-br from-[#070915] via-[#0b1024] to-[#0d1632] text-gray-100">
+      <HeaderBar isConnected={isConnected} />
+
+      <main className="w-full max-w-screen-2xl mx-auto px-8 py-10 space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
+            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
+              Connection
+            </p>
+            <p className="text-3xl font-semibold text-white">
+              {isConnected ? "Live" : "Waiting"}
+            </p>
+            <p className="text-sm text-gray-400 mt-2">
+              Socket to backend: {isConnected ? "up" : "down"}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-3 h-3 rounded-full ${
-                isConnected ? "bg-green-500" : "bg-red-500"
-              } animate-pulse`}
-            ></div>
-            <span className="text-sm text-gray-400">
-              {isConnected ? "Connected" : "Disconnected"}
-            </span>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
+            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
+              Transactions Shown
+            </p>
+            <p className="text-3xl font-semibold text-white">
+              {transactions.length}
+            </p>
+            <p className="text-sm text-gray-400 mt-2">Latest 20 kept in memory</p>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl shadow-black/30">
+            <p className="text-xs text-gray-300 mb-2 uppercase tracking-[0.12em]">
+              Blocks Shown
+            </p>
+            <p className="text-3xl font-semibold text-white">{blocks.length}</p>
+            <p className="text-sm text-gray-400 mt-2">Latest 20 kept in memory</p>
           </div>
         </div>
-      </header>
+        {isConnected && blocks.length === 0 && (
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-base text-gray-100 shadow-inner shadow-black/10">
+            <div className="flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="font-semibold">
+                Connected, waiting for block events from backend
+              </span>
+            </div>
+            <span className="text-gray-400 block mt-2">
+              (listening for: block, blocks, newBlock)
+            </span>
+            {lastEventTs && (
+              <span className="block text-sm text-gray-500 mt-1">
+                Last event received: {formatTimeAgo(lastEventTs)}
+              </span>
+            )}
+          </div>
+        )}
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Recent Transactions Panel */}
-          <div className="bg-[#0f1429] rounded-lg border border-[#1a1f3a] overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a1f3a]">
-              <h2 className="text-xl font-semibold text-white">
-                Recent Transactions
-              </h2>
-              <button className="text-sm text-[#5b9bd5] hover:text-[#7bb3e0] transition-colors">
-                View All
-              </button>
-            </div>
+          <TransactionsPanel
+            transactions={transactions}
+            truncateHash={truncateHash}
+            formatTimeAgo={formatTimeAgo}
+            lovelaceToADA={lovelaceToADA}
+          />
 
-            <div className="overflow-x-auto">
-              {transactions.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <p className="text-gray-400">
-                    Waiting for live transaction data...
-                  </p>
-                </div>
-              ) : (
-                <table className="w-full">
-                  <thead className="bg-[#151a2e]">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Transaction Hash
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Block
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Output Address
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Output
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1a1f3a]">
-                    {transactions.map((tx, index) => (
-                      <tr
-                        key={`${tx.id}-${index}`}
-                        className="hover:bg-[#151a2e] transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-mono text-[#5b9bd5]">
-                              {truncateHash(tx.id)}
-                            </span>
-                            <span className="text-xs text-gray-500 mt-1">
-                              {formatTimeAgo(tx.timestamp)}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="text-sm">
-                            <span className="text-white font-medium">
-                              {tx.blockHeight}
-                            </span>
-                            <span className="text-gray-400 ml-2">
-                              {tx.epoch} / {tx.slot}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col gap-1">
-                            {tx.outputAddresses.slice(0, 2).map((addr, idx) => (
-                              <span
-                                key={idx}
-                                className="text-sm font-mono text-gray-300"
-                                title={addr}
-                              >
-                                {/* {truncateAddress(addr)} */}
-                              </span>
-                            ))}
-                            {tx.outputAddresses.length > 2 && (
-                              <span className="text-xs text-[#5b9bd5]">
-                                {tx.outputAddresses.length - 2} More
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-white font-medium">
-                            {lovelaceToADA(tx.totalOutput)} A
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-
-          {/* Recent Blocks Panel */}
-          <div className="bg-[#0f1429] rounded-lg border border-[#1a1f3a] overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1a1f3a]">
-              <h2 className="text-xl font-semibold text-white">
-                Recent Blocks
-              </h2>
-              <button className="text-sm text-[#5b9bd5] hover:text-[#7bb3e0] transition-colors">
-                View All
-              </button>
-            </div>
-
-            <div className="overflow-x-auto">
-              {blocks.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <p className="text-gray-400">
-                    Waiting for live block data...
-                  </p>
-                </div>
-              ) : (
-                <table className="w-full">
-                  <thead className="bg-[#151a2e]">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Block
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Epoch / Slot
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Pool
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Transactions
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                        Output
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1a1f3a]">
-                    {blocks.map((block, index) => (
-                      <tr
-                        key={`${block.id}-${index}`}
-                        className="hover:bg-[#151a2e] transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col">
-                            <span className="text-sm font-medium text-white">
-                              {block.height}
-                            </span>
-                            <span className="text-xs text-gray-500 mt-1">
-                              {formatTimeAgo(block.timestamp)}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-300">
-                            {block.epoch} / {block.slot}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className="text-sm text-gray-300"
-                            title={block.pool}
-                          >
-                            {/* {truncateAddress(block.pool, 5, 5)} */}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-white font-medium">
-                            {block.transactionCount}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-white font-medium">
-                            {lovelaceToADA(block.totalOutput.toString())} A
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
+          <BlocksPanel
+            blocks={blocks}
+            formatTimeAgo={formatTimeAgo}
+            lovelaceToADA={lovelaceToADA}
+          />
         </div>
       </main>
     </div>

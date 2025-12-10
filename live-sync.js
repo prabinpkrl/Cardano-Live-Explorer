@@ -38,6 +38,7 @@ async function startChainSync(onNewBlock) {
        */
       rollForward: async (response, next) => {
         const block = response.block;
+        console.log("Received new block:", block);
 
         onNewBlock(block, next);
         // console.log("\n📦 NEW BLOCK");
@@ -46,21 +47,21 @@ async function startChainSync(onNewBlock) {
         // console.log("TX Count:", block.transactions?.length || 0);
         // console.log("Block Hash:", block.id.substring(0, 20) + "...");
 
-        block.transactions?.forEach((tx, index) => {
-          //   console.log(`  TX #${index + 1}`);
-          //   console.log("    ID:", tx.id);
-          //   console.log("    Fee:", tx.fee.ada.lovelace ?? "N/A");
-          //   const feeLovelace = BigInt(tx.fee.ada.lovelace);
-          //   const feeADA = Number(feeLovelace) / 1_000_000;
-          //   console.log("Fee in Lovelace:", feeLovelace.toString());
-          //   console.log("Fee in ADA:", feeADA);
-          //   console.log("    Inputs:", tx.inputs);
-          //   console.log("    Outputs:", tx.outputs);
-          //   console.log(
-          //     "    Minted Tokens:",
-          //     tx.mint ? Object.keys(tx.mint) : "None"
-          //   );
-        });
+        // block.transactions?.forEach((tx, index) => {
+        //   //   console.log(`  TX #${index + 1}`);
+        //   //   console.log("    ID:", tx.id);
+        //   //   console.log("    Fee:", tx.fee.ada.lovelace ?? "N/A");
+        //   //   const feeLovelace = BigInt(tx.fee.ada.lovelace);
+        //   //   const feeADA = Number(feeLovelace) / 1_000_000;
+        //   //   console.log("Fee in Lovelace:", feeLovelace.toString());
+        //   //   console.log("Fee in ADA:", feeADA);
+        //   //   console.log("    Inputs:", tx.inputs);
+        //   //   console.log("    Outputs:", tx.outputs);
+        //   //   console.log(
+        //   //     "    Minted Tokens:",
+        //   //     tx.mint ? Object.keys(tx.mint) : "None"
+        //   //   );
+        // });
 
         next(); // request next block
       },

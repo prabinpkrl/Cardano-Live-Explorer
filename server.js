@@ -25,7 +25,12 @@ startChainSync((block) => {
     )
   );
 
+  // Emit on a few common event names to match the frontend listener set
   io.emit("block", safeBlock);
+  io.emit("blocks", safeBlock);
+  io.emit("newBlock", safeBlock);
+  // Quick visibility in server logs
+  console.log("➡️  Emitted block to clients");
 });
 
 server.listen(PORT, () => {
