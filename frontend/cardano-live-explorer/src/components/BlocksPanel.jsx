@@ -28,15 +28,27 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
         {blocks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center px-4">
             <div className="w-20 h-20 mb-6 rounded-full bg-white/5 flex items-center justify-center">
-              <svg className="w-10 h-10 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              <svg
+                className="w-10 h-10 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
               </svg>
             </div>
-            <p className="text-lg text-gray-400 font-medium">Waiting for block data...</p>
+            <p className="text-lg text-gray-400 font-medium">
+              Waiting for block data...
+            </p>
           </div>
         ) : (
           <table className="w-full text-left border-collapse min-w-[600px]">
-            <thead className="bg-white/[0.02]">
+            <thead className="`bg-white/2">
               <tr>
                 <th className="px-8 py-5 text-sm font-bold text-gray-400 uppercase tracking-widest border-b border-white/5">
                   Block Height
@@ -59,7 +71,7 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
               {blocks.map((block, index) => (
                 <tr
                   key={`${block.id}-${index}`}
-                  className="group hover:bg-white/[0.02] transition-colors duration-200"
+                  className="group hover:bg-white/2 transition-colors duration-200"
                 >
                   <td className="px-8 py-6 align-top">
                     <div className="flex flex-col gap-1">
@@ -85,13 +97,20 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
                   <td className="px-8 py-6 align-top">
                     <div className="flex items-center gap-3 max-w-[180px]">
                       <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 flex-none">
-                        <span className="text-xs font-bold text-amber-500">P</span>
+                        <span className="text-xs font-bold text-amber-500">
+                          P
+                        </span>
                       </div>
                       <div className="flex flex-col min-w-0">
-                        <span className="text-sm text-gray-300 truncate font-medium font-mono" title={renderPool(block.pool)}>
+                        <span
+                          className="text-sm text-gray-300 truncate font-medium font-mono"
+                          title={renderPool(block.pool)}
+                        >
                           {renderPool(block.pool)}
                         </span>
-                        <span className="text-[10px] text-gray-500">Pool ID</span>
+                        <span className="text-[10px] text-gray-500">
+                          Pool ID
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -104,7 +123,9 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
                     <span className="text-xl font-bold text-white tabular-nums tracking-tight block">
                       {lovelaceToADA(block.totalOutput.toString())}
                     </span>
-                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">ADA</span>
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ADA
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -117,4 +138,3 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
 }
 
 export default BlocksPanel;
-

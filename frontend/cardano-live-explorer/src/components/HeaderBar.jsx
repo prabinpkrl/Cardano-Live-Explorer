@@ -3,7 +3,7 @@ function HeaderBar({ isConnected }) {
     <header className="sticky top-0 z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl">
       <div className="w-full px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
             <svg
               className="w-6 h-6 text-white"
               fill="none"
@@ -20,22 +20,23 @@ function HeaderBar({ isConnected }) {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white tracking-tight">
-              Cardano Explorer
+              Cardano Live Prepod Explorer
             </h1>
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
               <p className="text-xs font-medium text-blue-200/60 uppercase tracking-wider">
-                Live Mainnet
+                Live Prepod
               </p>
             </div>
           </div>
         </div>
 
         <div
-          className={`px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 ${isConnected
-            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-            : "bg-rose-500/10 border-rose-500/20 text-rose-400"
-            }`}
+          className={`px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 ${
+            isConnected
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+              : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+          }`}
         >
           <div className="flex items-center gap-2.5">
             <span className="relative flex h-2.5 w-2.5">
@@ -55,4 +56,3 @@ function HeaderBar({ isConnected }) {
 }
 
 export default HeaderBar;
-
