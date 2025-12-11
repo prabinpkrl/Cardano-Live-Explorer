@@ -14,12 +14,12 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
       <div className="flex flex-wrap items-center justify-between gap-4 px-8 py-6 border-b border-white/5 bg-white/5">
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
             Recent Blocks
           </h2>
           <p className="text-sm text-gray-400 pl-3.5">Latest received blocks</p>
         </div>
-        <span className="text-xs font-semibold text-amber-300 bg-amber-500/10 px-4 py-2 rounded-lg border border-amber-500/20">
+        <span className="text-xs font-semibold text-teal-300 bg-teal-500/10 px-4 py-2 rounded-lg border-2 border-teal-500/20 shadow-lg shadow-teal-500/10">
           Viewing {Math.min(blocks.length, 20)} items
         </span>
       </div>
@@ -96,8 +96,8 @@ function BlocksPanel({ blocks, formatTimeAgo, lovelaceToADA }) {
                   </td>
                   <td className="px-8 py-6 align-top">
                     <div className="flex items-center gap-3 max-w-[180px]">
-                      <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 flex-none">
-                        <span className="text-xs font-bold text-amber-500">
+                      <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center border-2 border-teal-500/20 flex-none shadow-lg shadow-teal-500/10">
+                        <span className="text-xs font-bold text-teal-400">
                           P
                         </span>
                       </div>

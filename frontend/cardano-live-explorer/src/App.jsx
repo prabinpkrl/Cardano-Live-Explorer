@@ -168,10 +168,10 @@ function App() {
       <main className="w-full space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Connection Status Card */}
-          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
-            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group border-2 border-cyan-500/10 hover:border-cyan-500/20 transition-all">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-20 transition-opacity rotate-12">
               <svg
-                className="w-40 h-40 text-blue-500"
+                className="w-40 h-40 text-cyan-500"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -179,7 +179,7 @@ function App() {
               </svg>
             </div>
             <div className="relative z-10">
-              <p className="text-sm font-bold text-blue-200/80 uppercase tracking-widest mb-2">
+              <p className="text-sm font-bold text-cyan-300/90 uppercase tracking-widest mb-2">
                 Network Status
               </p>
               <div className="flex items-baseline gap-3">
@@ -191,7 +191,7 @@ function App() {
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${
                     isConnected
-                      ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]"
+                      ? "bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-pulse"
                       : "bg-rose-400"
                   }`}
                 ></span>
@@ -201,10 +201,10 @@ function App() {
           </div>
 
           {/* Transactions Card */}
-          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
-            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group border-2 border-indigo-500/10 hover:border-indigo-500/20 transition-all">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-20 transition-opacity rotate-12">
               <svg
-                className="w-40 h-40 text-purple-500"
+                className="w-40 h-40 text-indigo-500"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -212,7 +212,7 @@ function App() {
               </svg>
             </div>
             <div className="relative z-10">
-              <p className="text-sm font-bold text-purple-200/80 uppercase tracking-widest mb-2">
+              <p className="text-sm font-bold text-indigo-300/90 uppercase tracking-widest mb-2">
                 Live Transactions
               </p>
               <div className="flex items-baseline gap-3">
@@ -230,10 +230,10 @@ function App() {
           </div>
 
           {/* Blocks Card */}
-          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group">
-            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-15 transition-opacity rotate-12">
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden group border-2 border-teal-500/10 hover:border-teal-500/20 transition-all">
+            <div className="absolute -right-6 -top-6 p-4 opacity-10 group-hover:opacity-20 transition-opacity rotate-12">
               <svg
-                className="w-40 h-40 text-amber-500"
+                className="w-40 h-40 text-teal-500"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -241,7 +241,7 @@ function App() {
               </svg>
             </div>
             <div className="relative z-10">
-              <p className="text-sm font-bold text-amber-200/80 uppercase tracking-widest mb-2">
+              <p className="text-sm font-bold text-teal-300/90 uppercase tracking-widest mb-2">
                 Latest Blocks
               </p>
               <div className="flex items-baseline gap-3">
@@ -260,11 +260,11 @@ function App() {
         </div>
 
         {isConnected && blocks.length === 0 && (
-          <div className="glass-panel rounded-2xl px-10 py-8 flex items-center gap-8 animate-fade-in relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5"></div>
-            <div className="relative flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-blue-500/10 ring-1 ring-blue-500/20">
+          <div className="glass-panel rounded-2xl px-10 py-8 flex items-center gap-8 animate-fade-in relative overflow-hidden border-2 border-cyan-500/10">
+            <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-indigo-500/5"></div>
+            <div className="relative flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-cyan-500/10 ring-2 ring-cyan-500/20 shadow-lg shadow-cyan-500/10">
               <svg
-                className="w-8 h-8 text-blue-400 animate-spin"
+                className="w-8 h-8 text-cyan-400 animate-spin"
                 fill="none"
                 viewBox="0 0 24 24"
               >

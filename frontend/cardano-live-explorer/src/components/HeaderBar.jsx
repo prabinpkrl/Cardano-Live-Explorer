@@ -1,52 +1,55 @@
 function HeaderBar({ isConnected }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl">
-      <div className="w-full px-8 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-              />
-            </svg>
+    <header className="sticky top-0 z-50 border-b-2 border-cyan-500/20 bg-linear-to-r from-[#0a0f1a]/95 via-[#0d1520]/95 to-[#0a0f1a]/95 backdrop-blur-xl shadow-lg shadow-cyan-500/10">
+      <div className="w-full px-8 h-24 flex items-center justify-between">
+        <div className="flex items-center gap-5">
+          <div className="relative">
+            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-cyan-500 via-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-cyan-500/30 ring-2 ring-cyan-400/20">
+              <svg
+                className="w-7 h-7 text-white"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full animate-pulse ring-2 ring-cyan-500/50"></div>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Cardano Live Prepod Explorer
+            <h1 className="text-2xl font-extrabold tracking-tight bg-linear-to-r from-cyan-300 via-blue-300 to-indigo-300 bg-clip-text text-transparent">
+              Cardano Live Explorer
             </h1>
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
-              <p className="text-xs font-medium text-blue-200/60 uppercase tracking-wider">
-                Live Prepod
+            <div className="flex items-center gap-2.5 mt-1">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.8)] animate-pulse"></span>
+              <p className="text-xs font-semibold text-cyan-300/80 uppercase tracking-widest">
+                Real-Time Network Monitor
               </p>
             </div>
           </div>
         </div>
 
         <div
-          className={`px-4 py-2 rounded-full border backdrop-blur-sm transition-all duration-300 ${
+          className={`px-6 py-3 rounded-xl border-2 backdrop-blur-sm transition-all duration-300 shadow-lg ${
             isConnected
-              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-              : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+              ? "bg-linear-to-r from-emerald-500/20 to-cyan-500/20 border-emerald-400/30 text-emerald-300 shadow-emerald-500/20"
+              : "bg-linear-to-r from-rose-500/20 to-orange-500/20 border-rose-400/30 text-rose-300 shadow-rose-500/20"
           }`}
         >
-          <div className="flex items-center gap-2.5">
-            <span className="relative flex h-2.5 w-2.5">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-3 w-3">
               {isConnected && (
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75"></span>
               )}
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-current"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-current shadow-[0_0_8px_currentColor]"></span>
             </span>
-            <span className="text-sm font-medium">
-              {isConnected ? "System Online" : "Reconnecting..."}
+            <span className="text-sm font-bold tracking-wide">
+              {isConnected ? "Live & Connected" : "Reconnecting..."}
             </span>
           </div>
         </div>
