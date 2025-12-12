@@ -76,7 +76,7 @@ function SearchBar() {
             </div>
             <button
               type="submit"
-              className="px-10 py-5 bg-cyan-900 rounded-xl text-white font-bold transition-all hover:scale-105 active:scale-95 text-base flex items-center justify-center min-w-[140px]"
+              className=" bg-cyan-900 rounded-xl text-white font-bold transition-all hover:scale-105 active:scale-95 text-base flex items-center justify-center min-w-[130px]"
             >
               <span className="flex items-center gap-2.5">
                 <svg

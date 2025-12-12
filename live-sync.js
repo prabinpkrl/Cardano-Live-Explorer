@@ -9,7 +9,7 @@ const AUTHENTICATED_URL = process.env.DEMETER_OGMIOS_URL;
 async function startChainSync(onNewBlock) {
   console.log(`🚀 Connecting to Ogmios at ${AUTHENTICATED_URL} `);
 
-  // 1. Build connection object (this tells Ogmios how to open WS)
+  // 1. Build connection object
   const connection = ogmios.createConnectionObject({
     host: AUTHENTICATED_URL,
     port: 443,
@@ -33,9 +33,6 @@ async function startChainSync(onNewBlock) {
   const chainSync = await ogmios.createChainSynchronizationClient(
     context,
     {
-      /**
-       * When a new block arrives
-       */
       rollForward: async (response, next) => {
         const block = response.block;
         console.log("Received new block:", block);
@@ -66,22 +63,19 @@ async function startChainSync(onNewBlock) {
         next();
       },
 
-      /**
-       * When the chain rolls back (fork)
-       */
       rollBackward: async (response, next) => {
         console.log("\n🔄 ROLLBACK OCCURRED");
         console.log("New Tip:", response.point);
         next();
       },
     },
-    { sequential: true } // ensures ordered messages
+    { sequential: true }
   );
 
   console.log("🔗 Starting ChainSync…");
 
   // 4. Start chain sync
-  await chainSync.resume(); // resume from current tip
+  await chainSync.resume();
 }
 
 module.exports = startChainSync;

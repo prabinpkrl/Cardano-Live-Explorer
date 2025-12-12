@@ -96,28 +96,65 @@ function TransactionsPanel({
                   </td>
                   <td className="px-8 py-6 align-top">
                     <div className="flex flex-col gap-2.5">
-                      {tx.outputAddresses.slice(0, 2).map((addr, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-2 max-w-60"
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-none ring-2 ring-[#0a0f1a]"></span>
-                          <a
-                            href={`https://preprod.cardanoscan.io/address/${addr}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm font-mono text-gray-300 hover:text-gray-100 truncate opacity-90 hover:underline cursor-pointer"
-                            title={addr}
-                          >
-                            {addr}
-                          </a>
-                        </div>
-                      ))}
-                      {tx.outputAddresses.length > 2 && (
-                        <span className="text-[11px] font-bold text-indigo-400/80 pl-3.5 uppercase tracking-wide">
-                          +{tx.outputAddresses.length - 2} more
-                        </span>
-                      )}
+                      {(() => {
+                        // Filter out placeholder addresses and get only valid addresses
+                        const validAddresses = (tx.outputAddresses || []).filter(
+                          (addr) => addr && addr !== "No address (not provided)" && addr.trim() !== ""
+                        );
+                        const addressCount = validAddresses.length;
+                        
+                        // Show all addresses if 3 or less, otherwise show first 3
+                        const addressesToShow = addressCount <= 3
+                          ? validAddresses
+                          : validAddresses.slice(0, 3);
+                        
+                        return (
+                          <>
+                            {addressesToShow.map((addr, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-2 max-w-60"
+                              >
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-none ring-2 ring-[#0a0f1a]"></span>
+                                <a
+                                  href={`https://preprod.cardanoscan.io/address/${addr}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-mono text-gray-300 hover:text-gray-100 truncate opacity-90 hover:underline cursor-pointer"
+                                  title={addr}
+                                >
+                                  {addr}
+                                </a>
+                              </div>
+                            ))}
+                            {/* Show clickable "+X more" link only if there are more than 3 valid addresses */}
+                            {addressCount > 3 && (
+                              <a
+                                href={`https://preprod.cardanoscan.io/transaction/${tx.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 pl-3.5 uppercase tracking-wide transition-colors cursor-pointer hover:underline flex items-center gap-1.5 group"
+                                title={`View all ${addressCount} output addresses on CardanoScan`}
+                              >
+                                <span>+{addressCount - 3} more</span>
+                                <svg
+                                  className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                  />
+                                </svg>
+                              </a>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </td>
                   <td className="px-8 py-6 align-top text-right">

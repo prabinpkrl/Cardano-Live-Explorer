@@ -25,7 +25,6 @@ startChainSync((block) => {
     )
   );
 
-  // Emit on a few common event names to match the frontend listener set
   io.emit("block", safeBlock);
   io.emit("blocks", safeBlock);
   io.emit("newBlock", safeBlock);
