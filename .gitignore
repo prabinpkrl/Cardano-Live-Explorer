@@ -1,6 +1,9 @@
-/node_modules
+backend/node_modules/
+**/node_modules/
 
 .env
 app.js
 withoutlibsync.js
 index.js
+
+readmeauth.md

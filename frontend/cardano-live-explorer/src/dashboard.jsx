@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import dotenv from "dotenv";
+dotenv.config();
 
 const lovelaceToADA = (lovelace) => {
   if (!lovelace) return "0";
@@ -34,7 +36,7 @@ function Dashboard() {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/auth/verify", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,7 +79,9 @@ function Dashboard() {
     setError(null);
     try {
       const res = await fetch(
-        `http://localhost:5000/transactions?walletAddress=${walletAddress}`
+        `${
+          import.meta.env.VITE_API_URL
+        }/transactions?walletAddress=${walletAddress}`
       );
       if (!res.ok) {
         throw new Error("Failed to fetch transactions");
@@ -106,7 +110,7 @@ function Dashboard() {
 
     // Call logout endpoint
     if (token) {
-      fetch("http://localhost:5000/auth/logout", {
+      fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

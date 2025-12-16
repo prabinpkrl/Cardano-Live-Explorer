@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(nonceRouter);
 app.use(verifyRouter);
 
-const PORT = 5000;
+const PORT = process.env.PORT;
 const server = http.createServer(app);
 
 const io = socketio(server, {

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
+import dotenv from "dotenv";
+dotenv.config();
 
 function ConnectWallet() {
   const navigate = useNavigate();
@@ -18,13 +20,16 @@ function ConnectWallet() {
 
       if (token) {
         try {
-          const res = await fetch("http://localhost:5000/auth/verify", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
+          const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/auth/verify`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           if (res.ok) {
             const data = await res.json();
@@ -104,7 +109,7 @@ function ConnectWallet() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/auth/nonce", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/nonce`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress }),
@@ -146,7 +151,7 @@ function ConnectWallet() {
       console.log("Signed message:", signed);
 
       // Step 4: Send signature + key to backend
-      const res = await fetch("http://localhost:5000/auth/verify", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
