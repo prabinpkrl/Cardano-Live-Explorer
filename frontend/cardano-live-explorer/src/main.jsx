@@ -10,7 +10,8 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<ConnectWallet />} />
+        <Route path="/" element={<App />} />
+        <Route path="/auth" element={<ConnectWallet />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

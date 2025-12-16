@@ -35,7 +35,7 @@ async function startChainSync(onNewBlock) {
     {
       rollForward: async (response, next) => {
         const block = response.block;
-        console.log("Received new block:", block);
+        // console.log("Received new block:", block);
 
         onNewBlock(block, next);
         // console.log("\n📦 NEW BLOCK");

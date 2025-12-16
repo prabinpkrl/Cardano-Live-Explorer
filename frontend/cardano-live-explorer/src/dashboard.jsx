@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 
 const lovelaceToADA = (lovelace) => {
@@ -34,7 +34,7 @@ function Dashboard() {
       }
 
       try {
-        const res = await fetch("http://localhost:4000/auth/verify", {
+        const res = await fetch("http://localhost:5000/auth/verify", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -77,7 +77,7 @@ function Dashboard() {
     setError(null);
     try {
       const res = await fetch(
-        `http://localhost:4000/transactions?walletAddress=${walletAddress}`
+        `http://localhost:5000/transactions?walletAddress=${walletAddress}`
       );
       if (!res.ok) {
         throw new Error("Failed to fetch transactions");
@@ -106,7 +106,7 @@ function Dashboard() {
 
     // Call logout endpoint
     if (token) {
-      fetch("http://localhost:4000/auth/logout", {
+      fetch("http://localhost:5000/auth/logout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -133,6 +133,9 @@ function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
+            <Link to="/" className="flex items-center gap-2 mb-1">
+              <div>back to home</div>
+            </Link>
             <h1 className="text-4xl font-extrabold mb-2 bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
               Wallet Dashboard
             </h1>

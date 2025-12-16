@@ -3,8 +3,18 @@ const cors = require("cors");
 const http = require("http");
 const socketio = require("socket.io");
 const startChainSync = require("./live-sync");
+const { nonceRouter } = require("./noncegenerate");
+const { verifyRouter } = require("./verifySignature");
+require("dotenv").config();
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Mount authentication routes
+app.use(nonceRouter);
+app.use(verifyRouter);
+
 const PORT = 5000;
 const server = http.createServer(app);
 

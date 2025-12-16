@@ -18,7 +18,7 @@ function ConnectWallet() {
 
       if (token) {
         try {
-          const res = await fetch("http://localhost:4000/auth/verify", {
+          const res = await fetch("http://localhost:5000/auth/verify", {
             method: "POST",
             headers: {
               Authorization: `Bearer ${token}`,
@@ -104,7 +104,7 @@ function ConnectWallet() {
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/auth/nonce", {
+      const res = await fetch("http://localhost:5000/auth/nonce", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ walletAddress }),
@@ -146,7 +146,7 @@ function ConnectWallet() {
       console.log("Signed message:", signed);
 
       // Step 4: Send signature + key to backend
-      const res = await fetch("http://localhost:4000/auth/verify", {
+      const res = await fetch("http://localhost:5000/auth/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
