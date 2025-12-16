@@ -1,20 +1,24 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 const { checkSignature } = require("@meshsdk/core");
 const Cardano = require("@emurgo/cardano-serialization-lib-nodejs");
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- In-Memory Stores (For Authentication) ---
-const nonceStore = new Map();
-const sessions = new Map();
+// --- Configuration ---
+const JWT_SECRET = process.env.JWT_SECRET;
 const NONCE_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
-const SESSION_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
+const JWT_EXPIRY = "7d"; // 7 days
 
-// --- HELPER FUNCTION ---
+// --- In-Memory Stores ---
+const nonceStore = new Map();
+
+// --- HELPER FUNCTIONS ---
 function hexToBech32(hexAddress) {
   try {
     const addressBytes = Buffer.from(hexAddress, "hex");
@@ -26,10 +30,31 @@ function hexToBech32(hexAddress) {
   }
 }
 
+// Middleware to verify JWT token
+function verifyJWT(req, res, next) {
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded; // Attach user data to request
+    next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired" });
+    }
+    return res.status(401).json({ error: "Invalid token" });
+  }
+}
+
 // --- ENDPOINTS ---
 
 /**
  * 🔗 /auth/nonce
+ * Generate a nonce for wallet authentication
  */
 app.post("/auth/nonce", (req, res) => {
   const { walletAddress: authAddress } = req.body;
@@ -53,37 +78,34 @@ app.post("/auth/nonce", (req, res) => {
  * 🔑 /auth/verify (POST)
  * Handles both:
  * 1. Initial wallet signature verification (with nonce, signature, publicKey)
- * 2. Session token verification (with Authorization header only)
+ * 2. JWT token verification (with Authorization header only)
  */
 app.post("/auth/verify", async (req, res) => {
   const { walletAddress: authAddress, nonce, signature, publicKey } = req.body;
   const token = req.headers.authorization?.replace("Bearer ", "");
 
-  // CASE 1: Session Token Verification (Dashboard checking existing session)
+  // CASE 1: JWT Token Verification (Dashboard checking existing session)
   if (token && !nonce && !signature && !publicKey) {
-    const session = sessions.get(token);
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
 
-    if (!session) {
-      return res.status(401).json({ error: "Invalid or expired session" });
+      console.log(
+        `[backend] ✓ JWT verified for ${decoded.walletAddress.substring(
+          0,
+          8
+        )}...`
+      );
+
+      return res.json({
+        success: true,
+        walletAddress: decoded.walletAddress,
+      });
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(401).json({ error: "Token expired" });
+      }
+      return res.status(401).json({ error: "Invalid token" });
     }
-
-    // Check if session has expired
-    if (Date.now() - session.createdAt > SESSION_EXPIRY_MS) {
-      sessions.delete(token);
-      return res.status(401).json({ error: "Session expired" });
-    }
-
-    console.log(
-      `[backend] ✓ Session verified for ${session.walletAddress.substring(
-        0,
-        8
-      )}...`
-    );
-
-    return res.json({
-      success: true,
-      walletAddress: session.walletAddress,
-    });
   }
 
   // CASE 2: Initial Wallet Signature Verification (Login flow)
@@ -146,40 +168,51 @@ app.post("/auth/verify", async (req, res) => {
     return res.status(500).json({ error: "Server-side verification error." });
   }
 
-  // 3. AUTHENTICATION SUCCESS - Create Session
-  const sessionToken = crypto.randomBytes(32).toString("hex");
-  sessions.set(sessionToken, {
-    walletAddress: authAddress,
-    createdAt: Date.now(),
-  });
+  // 3. AUTHENTICATION SUCCESS - Create JWT Token
+  const jwtToken = jwt.sign(
+    {
+      walletAddress: authAddress,
+      bech32Address: hexToBech32(authAddress),
+      authenticatedAt: Date.now(),
+    },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRY }
+  );
+
   nonceStore.delete(authAddress);
 
   console.log(
     `[backend] ✅ User ${authAddress.substring(
       0,
       8
-    )}... successfully authenticated!`
+    )}... successfully authenticated! JWT expires in ${JWT_EXPIRY}`
   );
 
   res.json({
     success: true,
     walletAddress: authAddress,
-    token: sessionToken,
+    token: jwtToken,
   });
 });
 
 /**
- * 🚪 /auth/logout - Logout and destroy session
+ * 🚪 /auth/logout - Logout (client-side only, JWT is stateless)
  */
 app.post("/auth/logout", (req, res) => {
-  const token = req.headers.authorization?.replace("Bearer ", "");
-
-  if (token && sessions.has(token)) {
-    sessions.delete(token);
-    console.log("[backend] Session destroyed");
-  }
-
+  console.log("[backend] User logged out (JWT invalidated client-side)");
   res.json({ success: true, message: "Logged out successfully" });
+});
+
+/**
+ * 🔐 /auth/me - Get current user info (protected route example)
+ */
+app.get("/auth/me", verifyJWT, (req, res) => {
+  res.json({
+    success: true,
+    walletAddress: req.user.walletAddress,
+    bech32Address: req.user.bech32Address,
+    authenticatedAt: req.user.authenticatedAt,
+  });
 });
 
 app.listen(4000, () => console.log("Backend running on http://localhost:4000"));

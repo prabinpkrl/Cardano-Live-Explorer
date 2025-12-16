@@ -23,11 +23,12 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch wallet address from backend using session token
+  // Fetch wallet address from backend using JWT token
   useEffect(() => {
     const fetchWalletAddress = async () => {
-      const sessionToken = sessionStorage.getItem("sessionToken");
-      if (!sessionToken) {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
         navigate("/");
         return;
       }
@@ -36,27 +37,31 @@ function Dashboard() {
         const res = await fetch("http://localhost:4000/auth/verify", {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${sessionToken}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
 
         if (!res.ok) {
-          // Session invalid, redirect to login
-          sessionStorage.removeItem("sessionToken");
+          // Token invalid or expired, redirect to login
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("walletAddress");
           navigate("/");
           return;
         }
 
         const data = await res.json();
-        if (data.walletAddress) {
+        if (data.success && data.walletAddress) {
           setWalletAddress(data.walletAddress);
         } else {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("walletAddress");
           navigate("/");
         }
       } catch (err) {
         console.error("Failed to fetch wallet address:", err);
-        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("walletAddress");
         navigate("/");
       }
     };
@@ -97,7 +102,24 @@ function Dashboard() {
   }, [walletAddress]);
 
   const handleDisconnect = () => {
+    const token = localStorage.getItem("authToken");
+
+    // Call logout endpoint
+    if (token) {
+      fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }).catch((err) => console.error("Logout error:", err));
+    }
+
+    // Clear local storage
+    localStorage.removeItem("authToken");
     localStorage.removeItem("walletAddress");
+
+    // Navigate to home
     navigate("/");
   };
 
@@ -111,7 +133,7 @@ function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <h1 className="text-4xl font-extrabold text-white mb-2 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold mb-2 bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
               Wallet Dashboard
             </h1>
             <p className="text-gray-400">

@@ -1,15 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "./components/Layout";
 
 function ConnectWallet() {
   const navigate = useNavigate();
   const [walletApi, setWalletApi] = useState(null);
-  const [walletAddress, setWalletAddress] = useState(null); // hex string
+  const [walletAddress, setWalletAddress] = useState(null);
   const [nonce, setNonce] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [walletName, setWalletName] = useState(null);
+
+  // Check if user is already logged in with valid JWT
+  useEffect(() => {
+    const checkExistingAuth = async () => {
+      const token = localStorage.getItem("authToken");
+
+      if (token) {
+        try {
+          const res = await fetch("http://localhost:4000/auth/verify", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success) {
+              // User is already authenticated, redirect to dashboard
+              console.log(
+                "✅ Already authenticated, redirecting to dashboard..."
+              );
+              navigate("/dashboard");
+            }
+          } else {
+            // Token is invalid or expired, remove it
+            localStorage.removeItem("authToken");
+          }
+        } catch (err) {
+          console.error("Auth check failed:", err);
+          localStorage.removeItem("authToken");
+        }
+      }
+    };
+
+    checkExistingAuth();
+  }, [navigate]);
 
   // Step 1: Connect to wallet
   const connectWallet = async (walletKey) => {
@@ -29,7 +67,6 @@ function ConnectWallet() {
       const wallet = window.cardano[walletKey];
       const api = await wallet.enable();
 
-      // Get first used address (hex)
       let usedAddresses = [];
       if (typeof api.getUsedAddresses === "function") {
         usedAddresses = await api.getUsedAddresses();
@@ -41,7 +78,7 @@ function ConnectWallet() {
         return;
       }
 
-      const authAddress = usedAddresses[0]; // hex string
+      const authAddress = usedAddresses[0];
 
       console.log("Connected wallet:", walletKey);
       console.log("Wallet auth address (hex):", authAddress);
@@ -98,7 +135,6 @@ function ConnectWallet() {
     setError(null);
     setLoading(true);
     try {
-      // Convert nonce to hex string for signing
       const stringToHex = (str) =>
         Array.from(str)
           .map((c) => c.charCodeAt(0).toString(16).padStart(2, "0"))
@@ -106,7 +142,6 @@ function ConnectWallet() {
 
       const messageHex = stringToHex(nonce);
 
-      // This should return { key, signature } for verification
       const signed = await walletApi.signData(walletAddress, messageHex);
       console.log("Signed message:", signed);
 
@@ -125,14 +160,13 @@ function ConnectWallet() {
       const data = await res.json();
       console.log("Backend verification response:", data);
 
-      // FIX: Check for "token" instead of "sessionToken"
       if (data.success && data.token && data.walletAddress) {
-        // Store session token (stateless login)
-        sessionStorage.setItem("sessionToken", data.token); // Changed from data.sessionToken to data.token
-        sessionStorage.setItem("walletAddress", data.walletAddress);
+        // Store JWT token in localStorage (persistent across sessions)
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("walletAddress", data.walletAddress);
 
         console.log(
-          "✅ Authentication successful! Redirecting to dashboard..."
+          "✅ Authentication successful! JWT token saved. Redirecting to dashboard..."
         );
 
         // Redirect to dashboard
@@ -178,7 +212,7 @@ function ConnectWallet() {
         <div className="w-full max-w-2xl">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold text-white mb-4 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-extrabold mb-4 from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
               Connect Your Wallet
             </h1>
             <p className="text-gray-400 text-lg">
@@ -288,7 +322,7 @@ function ConnectWallet() {
                 <button
                   onClick={getNonceFromBackend}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -353,7 +387,7 @@ function ConnectWallet() {
                 <button
                   onClick={signNonce}
                   disabled={loading}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full  from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -405,7 +439,7 @@ function ConnectWallet() {
               <div className="mt-6 glass-panel rounded-xl p-4 border-2 border-rose-500/50 bg-rose-500/10">
                 <div className="flex items-center gap-3">
                   <svg
-                    className="w-5 h-5 text-rose-400 flex-shrink-0"
+                    className="w-5 h-5 text-rose-400 "
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
