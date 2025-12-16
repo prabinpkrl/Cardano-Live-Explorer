@@ -133,7 +133,7 @@ function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-1">
+            <Link to="/" className="flex     items-center gap-2 mb-1">
               <div>back to home</div>
             </Link>
             <h1 className="text-4xl font-extrabold mb-2 bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
