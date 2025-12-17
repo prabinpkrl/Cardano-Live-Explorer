@@ -2,11 +2,14 @@ import { Link } from "react-router-dom";
 
 function HeaderBar({ isConnected }) {
   return (
-    <header className="sticky top-0 z-50 border-b-2 border-cyan-500/20 bg-linear-to-r from-[#0a0f1a]/95 via-[#0d1520]/95 to-[#0a0f1a]/95 backdrop-blur-xl shadow-lg shadow-cyan-500/10">
+    <header className="sticky top-0 z-50 border-b-2 border-gray-700 bg-[#0d1520] backdrop-blur-xl shadow-lg shadow-black/20">
       <div className="w-full px-8 h-24 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-5 hover:opacity-90 transition-opacity">
+        <Link
+          to="/"
+          className="flex items-center gap-5 hover:opacity-90 transition-opacity"
+        >
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-cyan-500 via-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-cyan-500/30 ring-2 ring-cyan-400/20">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-600 flex items-center justify-center shadow-xl shadow-black/30 ring-2 ring-cyan-500/30">
               <svg
                 className="w-7 h-7 text-white"
                 fill="none"
@@ -24,7 +27,7 @@ function HeaderBar({ isConnected }) {
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-cyan-400 rounded-full animate-pulse ring-2 ring-cyan-500/50"></div>
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight bg-linear-to-r from-cyan-300 via-blue-300 to-indigo-300 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-extrabold tracking-tight text-cyan-300">
               Cardano Live Explorer
             </h1>
             <div className="flex items-center gap-2.5 mt-1">
@@ -38,10 +41,11 @@ function HeaderBar({ isConnected }) {
 
         <div className="flex items-center gap-4">
           <div
-            className={`px-4 py-2 rounded-xl border-2 backdrop-blur-sm transition-all duration-300 shadow-lg ${isConnected
-                ? "bg-linear-to-r from-emerald-500/20 to-cyan-500/20 border-emerald-400/30 text-emerald-300 shadow-emerald-500/20"
-                : "bg-linear-to-r from-rose-500/20 to-orange-500/20 border-rose-400/30 text-rose-300 shadow-rose-500/20"
-              }`}
+            className={`px-4 py-2 rounded-xl border-2 backdrop-blur-sm transition-all duration-300 shadow-lg ${
+              isConnected
+                ? "bg-emerald-500/20 border-emerald-400/30 text-emerald-300 shadow-black/20"
+                : "bg-rose-500/20 border-rose-400/30 text-rose-300 shadow-black/20"
+            }`}
           >
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
@@ -66,11 +70,9 @@ function HeaderBar({ isConnected }) {
           ) : (
             <Link
               to="/auth"
-              className="px-6 py-3 rounded-xl border-2 border-cyan-500/30 bg-linear-to-r from-cyan-600/20 to-blue-600/20 hover:from-cyan-500/30 hover:to-blue-500/30 text-white font-bold tracking-wide transition-all shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 group"
+              className="px-6 py-3 rounded-xl border-2 border-cyan-500/30 bg-cyan-600/20 hover:bg-cyan-500/30 text-white font-bold tracking-wide transition-all shadow-lg shadow-black/20 hover:shadow-black/30"
             >
-              <span className="group-hover:text-cyan-300 transition-colors">
-                Connect Wallet
-              </span>
+              Connect Wallet
             </Link>
           )}
         </div>

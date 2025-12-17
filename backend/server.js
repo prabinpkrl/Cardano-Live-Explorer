@@ -5,6 +5,7 @@ const socketio = require("socket.io");
 const startChainSync = require("./live-sync");
 const { nonceRouter } = require("./noncegenerate");
 const { verifyRouter } = require("./verifySignature");
+const { blockfrostRouter } = require("./blockfrost");
 require("dotenv").config();
 
 const app = express();
@@ -14,6 +15,9 @@ app.use(express.json());
 // Mount authentication routes
 app.use(nonceRouter);
 app.use(verifyRouter);
+
+// Mount Blockfrost API routes
+app.use(blockfrostRouter);
 
 const PORT = process.env.PORT;
 const server = http.createServer(app);

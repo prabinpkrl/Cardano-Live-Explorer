@@ -38,7 +38,7 @@ function SearchBar() {
         <div className="flex flex-col gap-4">
           {/* Title */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-linear-to-br from-cyan-500/20 via-blue-500/20 to-indigo-500/20 flex items-center justify-center border-2 border-cyan-500/30 shadow-lg">
+            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center border-2 border-cyan-500/30 shadow-lg">
               <svg
                 className="w-6 h-6 text-cyan-400"
                 fill="none"
@@ -54,7 +54,7 @@ function SearchBar() {
               </svg>
             </div>
             <div>
-              <h3 className="text-xl font-bold text-transparenttracking-tight bg-linear-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold tracking-tight text-cyan-300">
                 Blockchain Search
               </h3>
               <p className="text-sm text-gray-400">

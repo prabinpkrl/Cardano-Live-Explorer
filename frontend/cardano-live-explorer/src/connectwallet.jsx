@@ -215,7 +215,7 @@ function ConnectWallet() {
         <div className="w-full max-w-2xl">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold mb-4 from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-extrabold mb-4 text-cyan-400">
               Connect Your Wallet
             </h1>
             <p className="text-gray-400 text-lg">
@@ -325,7 +325,7 @@ function ConnectWallet() {
                 <button
                   onClick={getNonceFromBackend}
                   disabled={loading}
-                  className="w-full from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -390,7 +390,7 @@ function ConnectWallet() {
                 <button
                   onClick={signNonce}
                   disabled={loading}
-                  className="w-full  from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>

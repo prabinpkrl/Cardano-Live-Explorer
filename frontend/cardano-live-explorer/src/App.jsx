@@ -263,7 +263,7 @@ function App() {
 
         {isConnected && blocks.length === 0 && (
           <div className="glass-panel rounded-2xl px-10 py-8 flex items-center gap-8 animate-fade-in relative overflow-hidden border-2 border-cyan-500/10">
-            <div className="absolute inset-0 bg-linear-to-r from-cyan-500/5 via-blue-500/5 to-indigo-500/5"></div>
+            <div className="absolute inset-0 bg-cyan-500/5"></div>
             <div className="relative flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-cyan-500/10 ring-2 ring-cyan-500/20 shadow-lg shadow-cyan-500/10">
               <svg
                 className="w-8 h-8 text-cyan-400 animate-spin"

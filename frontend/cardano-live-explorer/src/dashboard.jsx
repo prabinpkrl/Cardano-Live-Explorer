@@ -16,10 +16,17 @@ const truncateHash = (hash, start = 8, end = 8) => {
   return `${hash.substring(0, start)}...${hash.substring(hash.length - end)}`;
 };
 
+const formatTimestamp = (unixTime) => {
+  if (!unixTime) return "N/A";
+  return new Date(unixTime * 1000).toLocaleString();
+};
+
 function Dashboard() {
   const navigate = useNavigate();
   const [walletAddress, setWalletAddress] = useState(null);
+  const [stakeAddress, setStakeAddress] = useState(null);
   const [transactions, setTransactions] = useState([]);
+  const [accountInfo, setAccountInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -43,7 +50,6 @@ function Dashboard() {
         });
 
         if (!res.ok) {
-          // Token invalid or expired, redirect to login
           localStorage.removeItem("authToken");
           localStorage.removeItem("walletAddress");
           navigate("/");
@@ -53,6 +59,26 @@ function Dashboard() {
         const data = await res.json();
         if (data.success && data.walletAddress) {
           setWalletAddress(data.walletAddress);
+
+          // Get stake address from payment address
+          const stakeRes = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/convert-stake`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ paymentAddress: data.walletAddress }),
+            }
+          );
+
+          if (stakeRes.ok) {
+            const stakeData = await stakeRes.json();
+            if (stakeData.success) {
+              setStakeAddress(stakeData.stakeAddress);
+            }
+          }
         } else {
           localStorage.removeItem("authToken");
           localStorage.removeItem("walletAddress");
@@ -69,23 +95,53 @@ function Dashboard() {
     fetchWalletAddress();
   }, [navigate]);
 
-  // Fetch transaction history from backend
+  // Fetch transaction history from Blockfrost
   const fetchTransactions = async () => {
     if (!walletAddress) return;
 
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
     setLoading(true);
     setError(null);
+
     try {
-      const res = await fetch(
-        `${
-          import.meta.env.VITE_API_URL
-        }/transactions?walletAddress=${walletAddress}`
+      // Fetch history
+      const historyRes = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/history?address=${walletAddress}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      if (!res.ok) {
+
+      if (!historyRes.ok) {
         throw new Error("Failed to fetch transactions");
       }
-      const data = await res.json();
-      setTransactions(data.transactions || []);
+
+      const historyData = await historyRes.json();
+      setTransactions(historyData.transactions || []);
+
+      // Fetch account info if we have stake address
+      if (stakeAddress) {
+        const accountRes = await fetch(
+          `${
+            import.meta.env.VITE_API_URL
+          }/api/account?stakeAddress=${stakeAddress}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (accountRes.ok) {
+          const accountData = await accountRes.json();
+          setAccountInfo(accountData);
+        }
+      }
+
       setLoading(false);
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
@@ -97,11 +153,8 @@ function Dashboard() {
   useEffect(() => {
     if (walletAddress) {
       fetchTransactions();
-      // Optional: poll every 10 seconds for new transactions
-      const interval = setInterval(fetchTransactions, 10000);
-      return () => clearInterval(interval);
     }
-  }, [walletAddress]);
+  }, [walletAddress, stakeAddress]);
 
   const handleDisconnect = () => {
     const token = localStorage.getItem("authToken");
@@ -136,9 +189,9 @@ function Dashboard() {
         <div className="flex items-center justify-between mb-10">
           <div>
             <Link to="/" className="flex     items-center gap-2 mb-1">
-              <div>back to home</div>
+              <div className="border-2 bg-blue-400 w-fit">Back to home</div>
             </Link>
-            <h1 className="text-4xl font-extrabold mb-2 bg-linear-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold mb-2 text-cyan-400">
               Wallet Dashboard
             </h1>
             <p className="text-gray-400">
@@ -176,6 +229,11 @@ function Dashboard() {
               <p className="text-white font-mono text-lg">
                 {truncateHash(walletAddress, 12, 12)}
               </p>
+              {stakeAddress && (
+                <p className="text-gray-400 font-mono text-sm mt-1">
+                  Stake: {truncateHash(stakeAddress, 12, 12)}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2 text-green-400">
               <span className="w-3 h-3 rounded-full bg-green-400 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-pulse"></span>
@@ -183,6 +241,36 @@ function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Account Info Card */}
+        {accountInfo && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="glass-panel rounded-2xl p-6 border-2 border-cyan-500/10">
+              <p className="text-sm font-bold text-cyan-300/90 uppercase tracking-widest mb-2">
+                Total Balance
+              </p>
+              <p className="text-2xl font-bold text-white">
+                {lovelaceToADA(accountInfo.controlledAmount)} ₳
+              </p>
+            </div>
+            <div className="glass-panel rounded-2xl p-6 border-2 border-indigo-500/10">
+              <p className="text-sm font-bold text-indigo-300/90 uppercase tracking-widest mb-2">
+                Rewards
+              </p>
+              <p className="text-2xl font-bold text-white">
+                {lovelaceToADA(accountInfo.rewardsSum)} ₳
+              </p>
+            </div>
+            <div className="glass-panel rounded-2xl p-6 border-2 border-teal-500/10">
+              <p className="text-sm font-bold text-teal-300/90 uppercase tracking-widest mb-2">
+                Withdrawable
+              </p>
+              <p className="text-2xl font-bold text-white">
+                {lovelaceToADA(accountInfo.withdrawableAmount)} ₳
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Transactions Section */}
         <div className="glass-panel rounded-2xl p-8 border-2 border-indigo-500/10">
@@ -310,62 +398,66 @@ function Dashboard() {
                       Block
                     </th>
                     <th className="text-left py-4 px-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
-                      Slot
+                      Type
                     </th>
                     <th className="text-right py-4 px-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
-                      Total Output (ADA)
+                      Amount (ADA)
+                    </th>
+                    <th className="text-right py-4 px-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
+                      Fee (ADA)
                     </th>
                     <th className="text-left py-4 px-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
-                      Output Addresses
-                    </th>
-                    <th className="text-left py-4 px-4 text-sm font-bold text-gray-400 uppercase tracking-wider">
-                      Timestamp
+                      Time
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {transactions.map((tx, index) => (
                     <tr
-                      key={tx.id || index}
+                      key={tx.txHash || index}
                       className="border-b border-gray-800/50 hover:bg-white/5 transition-colors"
                     >
                       <td className="py-4 px-4">
-                        <p className="text-white font-mono text-sm">
-                          {truncateHash(tx.id, 10, 10)}
-                        </p>
+                        <a
+                          href={`https://preprod.cardanoscan.io/transaction/${tx.txHash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-400 hover:text-indigo-300 font-mono text-sm hover:underline"
+                        >
+                          {truncateHash(tx.txHash, 10, 10)}
+                        </a>
                       </td>
                       <td className="py-4 px-4 text-white font-semibold">
                         {tx.blockHeight || "N/A"}
                       </td>
-                      <td className="py-4 px-4 text-gray-400 font-mono text-sm">
-                        {tx.slot || "N/A"}
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <span className="text-cyan-400 font-semibold">
-                          {lovelaceToADA(tx.totalOutput)} ₳
+                      <td className="py-4 px-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                            tx.type === "received"
+                              ? "bg-green-500/20 text-green-400"
+                              : "bg-rose-500/20 text-rose-400"
+                          }`}
+                        >
+                          {tx.type}
                         </span>
                       </td>
-                      <td className="py-4 px-4">
-                        <div className="flex flex-col gap-1">
-                          {tx.outputAddresses?.slice(0, 2).map((addr, idx) => (
-                            <span
-                              key={idx}
-                              className="text-gray-300 font-mono text-xs"
-                            >
-                              {truncateHash(addr, 8, 8)}
-                            </span>
-                          ))}
-                          {tx.outputAddresses?.length > 2 && (
-                            <span className="text-gray-500 text-xs">
-                              +{tx.outputAddresses.length - 2} more
-                            </span>
-                          )}
-                        </div>
+                      <td className="py-4 px-4 text-right">
+                        <span
+                          className={`font-semibold ${
+                            tx.type === "received"
+                              ? "text-green-400"
+                              : "text-rose-400"
+                          }`}
+                        >
+                          {tx.type === "received" ? "+" : ""}
+                          {lovelaceToADA(tx.netAmount)} ₳
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-right text-gray-400 font-mono text-sm">
+                        {lovelaceToADA(tx.fees)} ₳
                       </td>
                       <td className="py-4 px-4 text-gray-400 text-sm">
-                        {tx.timestamp
-                          ? new Date(tx.timestamp).toLocaleString()
-                          : "N/A"}
+                        {formatTimestamp(tx.blockTime)}
                       </td>
                     </tr>
                   ))}
