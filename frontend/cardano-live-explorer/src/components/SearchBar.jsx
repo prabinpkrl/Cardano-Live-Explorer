@@ -38,9 +38,9 @@ function SearchBar() {
         <div className="flex flex-col gap-4">
           {/* Title */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center border-2 border-cyan-500/30 shadow-lg">
+            <div className="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center border-2 border-blue-500 shadow-lg">
               <svg
-                className="w-6 h-6 text-cyan-400"
+                className="w-6 h-6 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -54,7 +54,7 @@ function SearchBar() {
               </svg>
             </div>
             <div>
-              <h3 className="text-xl font-bold tracking-tight text-cyan-300">
+              <h3 className="text-xl font-bold tracking-tight text-white">
                 Blockchain Search
               </h3>
               <p className="text-sm text-gray-400">
@@ -71,12 +71,12 @@ function SearchBar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter transaction hash or address..."
-                className="w-full h-15 p-3 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder-gray-400 focus:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all text-lg font-mono tracking-wide hover:border-white/20"
+                className="w-full h-15 p-3 bg-black/40 border-2 border-white/10 rounded-xl text-white placeholder-gray-400 focus:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all text-lg font-mono tracking-wide hover:border-white/20"
               />
             </div>
             <button
               type="submit"
-              className=" bg-cyan-900 rounded-xl text-white font-bold transition-all hover:scale-105 active:scale-95 text-base flex items-center justify-center min-w-[130px]"
+              className="bg-blue-600 hover:bg-blue-700 rounded-md px-5 py-3 text-white font-medium transition-all text-sm flex items-center justify-center min-w-[130px]"
             >
               <span className="flex items-center gap-2.5">
                 <svg

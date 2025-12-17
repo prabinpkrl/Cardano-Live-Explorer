@@ -9,14 +9,14 @@ function TransactionsPanel({
       <div className="flex flex-wrap items-center justify-between gap-4 px-8 py-6 border-b border-white/5 bg-white/5">
         <div className="space-y-1">
           <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.6)]"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
             Recent Transactions
           </h2>
           <p className="text-sm text-gray-400 pl-3.5">
             Live stream from mempool
           </p>
         </div>
-        <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-4 py-2 rounded-lg border-2 border-indigo-500/20 shadow-lg shadow-indigo-500/10">
+        <span className="text-xs font-semibold text-white bg-blue-600 px-4 py-2 rounded-lg border border-blue-500">
           Viewing {Math.min(transactions.length, 20)} items
         </span>
       </div>
@@ -73,7 +73,7 @@ function TransactionsPanel({
                         href={`https://preprod.cardanoscan.io/transaction/${tx.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-mono text-base text-indigo-300 hover:text-indigo-200 transition-colors cursor-pointer hover:underline"
+                        className="font-mono text-base text-gray-200 hover:text-white transition-colors cursor-pointer hover:underline"
                         title={tx.id}
                       >
                         {truncateHash(tx.id)}
@@ -98,16 +98,22 @@ function TransactionsPanel({
                     <div className="flex flex-col gap-2.5">
                       {(() => {
                         // Filter out placeholder addresses and get only valid addresses
-                        const validAddresses = (tx.outputAddresses || []).filter(
-                          (addr) => addr && addr !== "No address (not provided)" && addr.trim() !== ""
+                        const validAddresses = (
+                          tx.outputAddresses || []
+                        ).filter(
+                          (addr) =>
+                            addr &&
+                            addr !== "No address (not provided)" &&
+                            addr.trim() !== ""
                         );
                         const addressCount = validAddresses.length;
-                        
+
                         // Show all addresses if 3 or less, otherwise show first 3
-                        const addressesToShow = addressCount <= 3
-                          ? validAddresses
-                          : validAddresses.slice(0, 3);
-                        
+                        const addressesToShow =
+                          addressCount <= 3
+                            ? validAddresses
+                            : validAddresses.slice(0, 3);
+
                         return (
                           <>
                             {addressesToShow.map((addr, idx) => (
@@ -133,7 +139,7 @@ function TransactionsPanel({
                                 href={`https://preprod.cardanoscan.io/transaction/${tx.id}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 pl-3.5 uppercase tracking-wide transition-colors cursor-pointer hover:underline flex items-center gap-1.5 group"
+                                className="text-[11px] font-bold text-gray-400 hover:text-gray-300 pl-3.5 uppercase tracking-wide transition-colors cursor-pointer hover:underline flex items-center gap-1.5 group"
                                 title={`View all ${addressCount} output addresses on CardanoScan`}
                               >
                                 <span>+{addressCount - 3} more</span>

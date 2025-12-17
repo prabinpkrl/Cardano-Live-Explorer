@@ -188,10 +188,13 @@ function Dashboard() {
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
-            <Link to="/" className="flex     items-center gap-2 mb-1">
-              <div className="border-2 bg-blue-400 w-fit">Back to home</div>
+            <Link
+              to="/"
+              className="inline-block px-4 py-2 mb-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
+            >
+              ← Back to Home
             </Link>
-            <h1 className="text-4xl font-extrabold mb-2 text-cyan-400">
+            <h1 className="text-4xl font-extrabold mb-2 text-white">
               Wallet Dashboard
             </h1>
             <p className="text-gray-400">
@@ -200,7 +203,7 @@ function Dashboard() {
           </div>
           <button
             onClick={handleDisconnect}
-            className="glass-panel rounded-xl px-6 py-3 border-2 border-gray-700/50 hover:border-rose-500/50 text-white font-semibold transition-all flex items-center gap-2"
+            className="rounded-md px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-all flex items-center gap-2"
           >
             <svg
               className="w-5 h-5"
@@ -220,10 +223,10 @@ function Dashboard() {
         </div>
 
         {/* Wallet Info Card */}
-        <div className="glass-panel rounded-2xl p-6 mb-8 border-2 border-cyan-500/10">
+        <div className="glass-panel rounded-2xl p-6 mb-8 border-2 border-blue-500/10">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-bold text-cyan-300/90 uppercase tracking-widest mb-2">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-2">
                 Connected Wallet
               </p>
               <p className="text-white font-mono text-lg">
@@ -245,24 +248,24 @@ function Dashboard() {
         {/* Account Info Card */}
         {accountInfo && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="glass-panel rounded-2xl p-6 border-2 border-cyan-500/10">
-              <p className="text-sm font-bold text-cyan-300/90 uppercase tracking-widest mb-2">
+            <div className="glass-panel rounded-2xl p-6 border-2 border-blue-500/10">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-2">
                 Total Balance
               </p>
               <p className="text-2xl font-bold text-white">
                 {lovelaceToADA(accountInfo.controlledAmount)} ₳
               </p>
             </div>
-            <div className="glass-panel rounded-2xl p-6 border-2 border-indigo-500/10">
-              <p className="text-sm font-bold text-indigo-300/90 uppercase tracking-widest mb-2">
+            <div className="glass-panel rounded-2xl p-6 border-2 border-blue-500/10">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-2">
                 Rewards
               </p>
               <p className="text-2xl font-bold text-white">
                 {lovelaceToADA(accountInfo.rewardsSum)} ₳
               </p>
             </div>
-            <div className="glass-panel rounded-2xl p-6 border-2 border-teal-500/10">
-              <p className="text-sm font-bold text-teal-300/90 uppercase tracking-widest mb-2">
+            <div className="glass-panel rounded-2xl p-6 border-2 border-blue-500/10">
+              <p className="text-sm font-bold text-white uppercase tracking-widest mb-2">
                 Withdrawable
               </p>
               <p className="text-2xl font-bold text-white">
@@ -273,11 +276,11 @@ function Dashboard() {
         )}
 
         {/* Transactions Section */}
-        <div className="glass-panel rounded-2xl p-8 border-2 border-indigo-500/10">
+        <div className="glass-panel rounded-2xl p-8 border-2 border-blue-500/10">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center gap-3">
               <svg
-                className="w-6 h-6 text-indigo-400"
+                className="w-6 h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -304,7 +307,7 @@ function Dashboard() {
             <div className="flex items-center justify-center py-20">
               <div className="flex flex-col items-center gap-4">
                 <svg
-                  className="w-12 h-12 text-cyan-400 animate-spin"
+                  className="w-12 h-12 text-white animate-spin"
                   fill="none"
                   viewBox="0 0 24 24"
                 >

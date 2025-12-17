@@ -195,17 +195,17 @@ function ConnectWallet() {
     {
       key: "lace",
       name: "Lace",
-      colorClass: "bg-cyan-500/20 group-hover:bg-cyan-500/30",
+      colorClass: "bg-blue-600",
     },
     {
       key: "eternl",
       name: "Eternl",
-      colorClass: "bg-purple-500/20 group-hover:bg-purple-500/30",
+      colorClass: "bg-blue-600",
     },
     {
       key: "nami",
       name: "Nami",
-      colorClass: "bg-blue-500/20 group-hover:bg-blue-500/30",
+      colorClass: "bg-blue-600",
     },
   ];
 
@@ -215,7 +215,7 @@ function ConnectWallet() {
         <div className="w-full max-w-2xl">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold mb-4 text-cyan-400">
+            <h1 className="text-5xl font-extrabold mb-4 text-white">
               Connect Your Wallet
             </h1>
             <p className="text-gray-400 text-lg">
@@ -224,12 +224,12 @@ function ConnectWallet() {
           </div>
 
           {/* Main Card */}
-          <div className="glass-panel rounded-2xl p-8 border-2 border-cyan-500/10 hover:border-cyan-500/20 transition-all">
+          <div className="glass-panel rounded-2xl p-8 border-2 border-blue-500/10 hover:border-blue-500/20 transition-all">
             {/* Step 1: Wallet Selection */}
             {!walletAddress && (
               <div>
                 <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-bold">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">
                     1
                   </span>
                   Select Your Wallet
@@ -240,14 +240,14 @@ function ConnectWallet() {
                       key={wallet.key}
                       onClick={() => connectWallet(wallet.key)}
                       disabled={loading}
-                      className="glass-panel rounded-xl p-6 border-2 border-gray-700/50 hover:border-cyan-500/50 transition-all text-left flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="glass-panel rounded-xl p-6 border-2 border-gray-700/50 hover:border-blue-500/50 transition-all text-left flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <div className="flex items-center gap-4">
                         <div
                           className={`w-12 h-12 rounded-xl ${wallet.colorClass} flex items-center justify-center transition-colors`}
                         >
                           <svg
-                            className="w-6 h-6 text-cyan-400"
+                            className="w-6 h-6 text-white"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -271,7 +271,7 @@ function ConnectWallet() {
                       </div>
                       {loading && (
                         <svg
-                          className="w-5 h-5 text-cyan-400 animate-spin"
+                          className="w-5 h-5 text-white animate-spin"
                           fill="none"
                           viewBox="0 0 24 24"
                         >
@@ -317,7 +317,7 @@ function ConnectWallet() {
                 </div>
 
                 <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-bold">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">
                     2
                   </span>
                   Get Authentication Nonce
@@ -325,7 +325,7 @@ function ConnectWallet() {
                 <button
                   onClick={getNonceFromBackend}
                   disabled={loading}
-                  className="w-full bg-cyan-600 hover:bg-cyan-500 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
@@ -369,7 +369,7 @@ function ConnectWallet() {
                       Nonce Received
                     </h2>
                   </div>
-                  <div className="glass-panel rounded-xl p-4 border border-cyan-500/20">
+                  <div className="glass-panel rounded-xl p-4 border border-blue-500/20">
                     <p className="text-gray-400 text-sm mb-1">Nonce</p>
                     <p className="text-white font-mono text-sm break-all">
                       {nonce}
@@ -378,7 +378,7 @@ function ConnectWallet() {
                 </div>
 
                 <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-500/20 text-cyan-400 text-sm font-bold">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">
                     3
                   </span>
                   Sign Message
@@ -390,7 +390,7 @@ function ConnectWallet() {
                 <button
                   onClick={signNonce}
                   disabled={loading}
-                  className="w-full bg-purple-600 hover:bg-purple-500 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 >
                   {loading ? (
                     <>
