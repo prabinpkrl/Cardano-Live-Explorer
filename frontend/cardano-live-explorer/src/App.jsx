@@ -5,8 +5,6 @@ import HeaderBar from "./components/HeaderBar";
 import SearchBar from "./components/SearchBar";
 import TransactionsPanel from "./components/TransactionsPanel";
 import BlocksPanel from "./components/BlocksPanel";
-import dotenv from "dotenv";
-dotenv.config();
 
 // Force websocket so we don't get stuck on long-polling
 const socket = io(`${import.meta.env.VITE_API_URL}`, {

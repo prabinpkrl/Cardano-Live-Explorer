@@ -16,6 +16,7 @@ services:
      - "5173:5173"
     env_file:
       - ./frontend/cardano-live-explorer/.env
+
     depends_on:
       - backend
     
