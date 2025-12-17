@@ -3,7 +3,8 @@ version: "3.9"
 services:
   backend:
     build: ./backend
-    container_name: cardano-live-explorer-backend
+    image: propkrl77/backend-live-explorer:1.0
+   
     ports:
       - "3000:3000"
     env_file:
@@ -11,7 +12,8 @@ services:
   
   frontend:
     build: ./frontend/cardano-live-explorer
-    container_name: cardano-live-explorer-frontend
+    image: propkrl77/frontend-live-explorer:1.0
+    
     ports:
      - "5173:5173"
     env_file:
